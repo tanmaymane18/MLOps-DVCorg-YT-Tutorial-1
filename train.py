@@ -1,11 +1,13 @@
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from lightgbm import LGBMClassifier
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import RobustScaler
 from sklearn.metrics import roc_auc_score, accuracy_score, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.utils.class_weight import compute_class_weight
 
 np.random.seed(42)
 
@@ -38,13 +40,15 @@ for fold in range(FOLDS):
     x_train = scaler.fit_transform(x_train)
     x_val = scaler.transform(x_val)
     x_test_scaled = scaler.transform(x_test)
-
-    clf = LogisticRegression()
+    
+    weights = compute_class_weight('balanced', classes=[0, 1], y=y_train)
+    
+    clf = LogisticRegression(class_weight={k:v for k,v in enumerate(weights)})
 
     clf.fit(x_train, y_train)
 
     val_preds = clf.predict(x_val)
-    test_preds = clf.predict_proba(x_test_scaled)
+    test_preds = clf.predict_proba(x_test_scaled)[:,1]
 
     predictions.append(test_preds)
 
@@ -54,22 +58,26 @@ for fold in range(FOLDS):
     print(f"{fold}: val_acc: {acc} val_auc: {auc_score}")
 
     with open('report.txt', 'a') as f:
-        f.writelines(f"{fold}: val_acc: {acc} val_auc: {auc_score}\n")
+        f.writelines(f"{fold}: val_acc: {acc:.2f} val_auc: {auc_score:.2f}\n")
 
     avg_auc += auc_score
     avg_acc += acc
 
-test_preds = np.array(test_preds)
-test_preds = np.mean(test_preds, axis=1)
-test_preds = np.round(test_preds)
+predictions = np.array(predictions)
+print(predictions)
+predictions = np.mean(predictions, axis=0)
+print(predictions)
+predictions = np.round(predictions)
 
-auc_score = roc_auc_score(y_test, test_preds)
-acc = accuracy_score(y_test, test_preds)
+print(predictions)
+
+auc_score = roc_auc_score(y_test, predictions)
+acc = accuracy_score(y_test, predictions)
 
 with open('report.txt', 'a') as f:
-        f.writelines(f"\n\ntest_acc: {acc} test_auc: {auc_score}\n")
+        f.writelines(f"\n\ntest_acc: {acc:.2f} test_auc: {auc_score:.2f}\n")
 
-c_mat = confusion_matrix(y_test, test_preds)
+c_mat = confusion_matrix(y_test, predictions)
 
 plt.figure(figsize=(10,8))
 ax = sns.heatmap(c_mat, annot=True)
