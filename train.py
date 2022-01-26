@@ -63,21 +63,21 @@ for fold in range(FOLDS):
     avg_auc += auc_score
     avg_acc += acc
 
-test_preds = np.array(test_preds)
-print(test_preds)
-test_preds = np.mean(test_preds, axis=0)
-print(test_preds)
-test_preds = np.round(test_preds)
+predictions = np.array(predictions)
+print(predictions)
+predictions = np.mean(predictions, axis=0)
+print(predictions)
+predictions = np.round(predictions)
 
-print(test_preds)
+print(predictions)
 
-auc_score = roc_auc_score(y_test, test_preds)
-acc = accuracy_score(y_test, test_preds)
+auc_score = roc_auc_score(y_test, predictions)
+acc = accuracy_score(y_test, predictions)
 
 with open('report.txt', 'a') as f:
         f.writelines(f"\n\ntest_acc: {acc:.2f} test_auc: {auc_score:.2f}\n")
 
-c_mat = confusion_matrix(y_test, test_preds)
+c_mat = confusion_matrix(y_test, predictions)
 
 plt.figure(figsize=(10,8))
 ax = sns.heatmap(c_mat, annot=True)
