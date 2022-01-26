@@ -1,11 +1,13 @@
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from lightgbm import LGBMClassifier
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import RobustScaler
 from sklearn.metrics import roc_auc_score, accuracy_score, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.utils.class_weight import compute_class_weight
 
 np.random.seed(42)
 
@@ -38,8 +40,10 @@ for fold in range(FOLDS):
     x_train = scaler.fit_transform(x_train)
     x_val = scaler.transform(x_val)
     x_test_scaled = scaler.transform(x_test)
-
-    clf = LogisticRegression()
+    
+    weights = compute_class_weight('balanced', classes=[0, 1], y=y_train)
+    
+    clf = LGBMClassifier(class_weight={k:v for k,v in enumerate(weights)})
 
     clf.fit(x_train, y_train)
 
@@ -62,6 +66,8 @@ for fold in range(FOLDS):
 test_preds = np.array(test_preds)
 test_preds = np.mean(test_preds, axis=1)
 test_preds = np.round(test_preds)
+
+print(test_preds)
 
 auc_score = roc_auc_score(y_test, test_preds)
 acc = accuracy_score(y_test, test_preds)
