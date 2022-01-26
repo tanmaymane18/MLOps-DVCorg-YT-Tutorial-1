@@ -43,7 +43,7 @@ for fold in range(FOLDS):
     
     weights = compute_class_weight('balanced', classes=[0, 1], y=y_train)
     
-    clf = LogisticRegression()
+    clf = LogisticRegression(class_weight={k:v for k,v enumerate(weights)})
 
     clf.fit(x_train, y_train)
 
