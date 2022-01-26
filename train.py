@@ -64,7 +64,9 @@ for fold in range(FOLDS):
     avg_acc += acc
 
 test_preds = np.array(test_preds)
+print(test_preds)
 test_preds = np.mean(test_preds, axis=1)
+print(test_preds)
 test_preds = np.round(test_preds)
 
 print(test_preds)
