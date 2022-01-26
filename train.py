@@ -43,12 +43,12 @@ for fold in range(FOLDS):
     
     weights = compute_class_weight('balanced', classes=[0, 1], y=y_train)
     
-    clf = LGBMClassifier(class_weight={k:v for k,v in enumerate(weights)})
+    clf = LogisticRegression()
 
     clf.fit(x_train, y_train)
 
     val_preds = clf.predict(x_val)
-    test_preds = clf.predict_proba(x_test_scaled)
+    test_preds = clf.predict_proba(x_test_scaled)[:,1]
 
     predictions.append(test_preds)
 
