@@ -65,7 +65,7 @@ for fold in range(FOLDS):
 
 test_preds = np.array(test_preds)
 print(test_preds)
-test_preds = np.mean(test_preds, axis=1)
+test_preds = np.mean(test_preds, axis=0)
 print(test_preds)
 test_preds = np.round(test_preds)
 
