@@ -54,7 +54,7 @@ for fold in range(FOLDS):
     print(f"{fold}: val_acc: {acc} val_auc: {auc_score}")
 
     with open('report.txt', 'a') as f:
-        f.writelines(f"{fold}: val_acc: {acc} val_auc: {auc_score}\n")
+        f.writelines(f"{fold}: val_acc: {acc:.2f} val_auc: {auc_score:.2f}\n")
 
     avg_auc += auc_score
     avg_acc += acc
@@ -67,7 +67,7 @@ auc_score = roc_auc_score(y_test, test_preds)
 acc = accuracy_score(y_test, test_preds)
 
 with open('report.txt', 'a') as f:
-        f.writelines(f"\n\ntest_acc: {acc} test_auc: {auc_score}\n")
+        f.writelines(f"\n\ntest_acc: {acc:.2f} test_auc: {auc_score:.2f}\n")
 
 c_mat = confusion_matrix(y_test, test_preds)
 
